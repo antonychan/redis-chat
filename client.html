@@ -1,19 +1,54 @@
 <html>
-   <head></head>
+   <head>
+      <title>Redis Chat</title>
+      <link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+      <style>
+         input[type="text"] {
+            width: 95%;
+         }
+      </style>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      <script src="/js/bootstrap.min.js"></script>
+   </head>
    <body>
       
       <div id="chat-window">
          <ul id="chat"></ul>
       </div>
-      <input type="text">
+      <form method="get" action="" onsubmit="return false;">
+         <input type="text" placeholder="Type here to chat!">
+         <input type="submit">
+      </form>
       
       <script src="/socket.io/socket.io.js"></script>
       <script>
-      var socket = io.connect('http://localhost');
-        socket.on('news', function (data) {
-          alert(data);
-          socket.emit('my other event', { my: 'data' });
-        });
+      $(document).ready(function(){
+         var socket = io.connect('http://localhost');
+         
+         socket.on("initial load", function(data){
+            data.forEach(function(message){
+               var chat = $('#chat'),
+                   li = $('<li>'+message+'</li>');
+                   
+               chat.append(li);
+            });
+         });
+         
+         socket.on("broadcast", function(data){
+            $('#chat').append($('<li>'+data.message+'</li>'));
+         });
+         
+         $('form').submit(function(e){
+            var input = $('input[type=text]', this),
+                message = input.val();
+                       
+            socket.emit("new message", {message: message});
+            input.val("");
+         });
+         
+         
+      });
+      
       </script>
    </body>
 </html>
