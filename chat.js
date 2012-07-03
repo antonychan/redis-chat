@@ -11,7 +11,7 @@ app.listen(80);
 
 function handler (req, res) {
 	var file = (req.url === "/")? "/client.html" : req.url;
-
+	
 	fs.readFile(__dirname + file, function (err, data) {
 		if (err) {
       		res.writeHead(500);
